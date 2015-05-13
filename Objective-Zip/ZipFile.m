@@ -89,7 +89,7 @@
 	[super ah_dealloc];
 }
 
-- (ZipWriteStream *) writeFileInZipWithName:(NSString *)fileNameInZip compressionLevel:(ZipCompressionLevel)compressionLevel {
+- (ZipWriteStream *) writeFileInZipWithName:(NSString *)fileNameInZip compressionLevel:(ZipCompressionLevel)compressionLevel zip64:(BOOL)zip64 {
 	if (_mode == ZipFileModeUnzip) {
 		NSString *reason= [NSString stringWithFormat:@"Operation not permitted with Unzip mode"];
 		@throw [[[ZipException alloc] initWithReason:reason] autorelease];
@@ -117,7 +117,7 @@
 									 (compressionLevel != ZipCompressionLevelNone) ? Z_DEFLATED : 0,
 									 compressionLevel, 0,
 									 -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY,
-									 NULL, 0, 1);
+									 NULL, 0, zip64?1:0);
 	if (err != ZIP_OK) {
 		NSString *reason= [NSString stringWithFormat:@"Error opening '%@' in zipfile", fileNameInZip];
 		@throw [[[ZipException alloc] initWithError:err reason:reason] autorelease];
@@ -126,7 +126,7 @@
 	return [[[ZipWriteStream alloc] initWithZipFileStruct:_zipFile fileNameInZip:fileNameInZip] autorelease];
 }
 
-- (ZipWriteStream *) writeFileInZipWithName:(NSString *)fileNameInZip fileDate:(NSDate *)fileDate compressionLevel:(ZipCompressionLevel)compressionLevel {
+- (ZipWriteStream *) writeFileInZipWithName:(NSString *)fileNameInZip fileDate:(NSDate *)fileDate compressionLevel:(ZipCompressionLevel)compressionLevel zip64:(BOOL)zip64 {
 	if (_mode == ZipFileModeUnzip) {
 		NSString *reason= [NSString stringWithFormat:@"Operation not permitted with Unzip mode"];
 		@throw [[[ZipException alloc] initWithReason:reason] autorelease];
@@ -153,7 +153,7 @@
 									 (compressionLevel != ZipCompressionLevelNone) ? Z_DEFLATED : 0,
 									 compressionLevel, 0,
 									 -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY,
-									 NULL, 0, 1);
+									 NULL, 0, zip64?1:0);
 	if (err != ZIP_OK) {
 		NSString *reason= [NSString stringWithFormat:@"Error opening '%@' in zipfile", fileNameInZip];
 		@throw [[[ZipException alloc] initWithError:err reason:reason] autorelease];
@@ -162,7 +162,7 @@
 	return [[[ZipWriteStream alloc] initWithZipFileStruct:_zipFile fileNameInZip:fileNameInZip] autorelease];
 }
 
-- (ZipWriteStream *) writeFileInZipWithName:(NSString *)fileNameInZip fileDate:(NSDate *)fileDate compressionLevel:(ZipCompressionLevel)compressionLevel password:(NSString *)password crc32:(NSUInteger)crc32 {
+- (ZipWriteStream *) writeFileInZipWithName:(NSString *)fileNameInZip fileDate:(NSDate *)fileDate compressionLevel:(ZipCompressionLevel)compressionLevel password:(NSString *)password crc32:(NSUInteger)crc32 zip64:(BOOL)zip64 {
 	if (_mode == ZipFileModeUnzip) {
 		NSString *reason= [NSString stringWithFormat:@"Operation not permitted with Unzip mode"];
 		@throw [[[ZipException alloc] initWithReason:reason] autorelease];
@@ -189,7 +189,7 @@
 									 (compressionLevel != ZipCompressionLevelNone) ? Z_DEFLATED : 0,
 									 compressionLevel, 0,
 									 -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY,
-									 [password cStringUsingEncoding:NSUTF8StringEncoding], crc32, 1);
+									 [password cStringUsingEncoding:NSUTF8StringEncoding], crc32, zip64?1:0);
 	if (err != ZIP_OK) {
 		NSString *reason= [NSString stringWithFormat:@"Error opening '%@' in zipfile", fileNameInZip];
 		@throw [[[ZipException alloc] initWithError:err reason:reason] autorelease];
